@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Lista de Tarefas</title>
+  <!-- Vinculamos o arquivo de estilos CSS externo -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Contêiner principal da aplicação -->
+  <main class="app-container">
+    <header class="app-header">
+      <h1>Minhas Tarefas</h1>
+      <p>Organize o seu dia a dia de forma simples!</p>
+    </header>
+
+    <!-- Formulário para digitar e cadastrar uma nova tarefa -->
+    <form id="task-form" class="task-form">
+      <input 
+        type="text" 
+        id="task-input" 
+        placeholder="O que você precisa fazer hoje?" 
+        autocomplete="off"
+        required
+      >
+      <button type="submit" id="add-btn">Adicionar</button>
+    </form>
+
+    <!-- Área de resumo / contador -->
+    <div class="task-summary">
+      <span id="task-count">0 tarefas cadastradas</span>
+    </div>
+
+    <!-- Lista onde os itens de tarefa serão adicionados via JavaScript -->
+    <ul id="task-list" class="task-list">
+      <!-- As tarefas serão inseridas aqui dinamicamente -->
+    </ul>
+  </main>
+
+  <!-- Vinculamos o arquivo JavaScript no final do body para garantir que o HTML já foi carregado -->
+  <script src="script.js"></script>
+</body>
+</html>

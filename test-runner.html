@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Suíte de Testes Automatizados - Lista de Tarefas</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #test-panel {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      width: 380px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      font-family: sans-serif;
+      font-size: 0.85rem;
+      z-index: 9999;
+    }
+    #test-panel h3 { margin-top: 0; color: #1e293b; }
+    .test-item { margin: 6px 0; padding: 4px 6px; border-radius: 4px; }
+    .test-pass { background: #dcfce7; color: #15803d; font-weight: 600; }
+    .test-fail { background: #fee2e2; color: #b91c1c; font-weight: bold; }
+    .test-summary {
+      margin-top: 12px;
+      padding: 8px;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .summary-pass { background: #16a34a; color: #ffffff; }
+    .summary-fail { background: #dc2626; color: #ffffff; }
+  </style>
+</head>
+<body>
+
+  <!-- Painel de Relatório dos Testes -->
+  <aside id="test-panel">
+    <h3>Relatório de Testes</h3>
+    <div id="test-results"></div>
+    <div id="test-summary"></div>
+  </aside>
+
+  <script>
+    window.capturedErrors = [];
+    window.onerror = function(msg, url, line, col, err) {
+      window.capturedErrors.push(`${msg} at ${url}:${line}:${col}`);
+      console.error("Global Error:", msg, url, line, col, err);
+    };
+  </script>
+
+  <!-- Aplicação Original sendo testada -->
+  <main class="app-container">
+    <header class="app-header">
+      <h1>Minhas Tarefas</h1>
+      <p>Organize o seu dia a dia de forma simples!</p>
+    </header>
+
+    <form id="task-form" class="task-form">
+      <input 
+        type="text" 
+        id="task-input" 
+        placeholder="O que você precisa fazer hoje?" 
+        autocomplete="off"
+        required
+      >
+      <button type="submit" id="add-btn">Adicionar</button>
+    </form>
+
+    <div class="task-summary">
+      <span id="task-count">0 tarefas cadastradas</span>
+    </div>
+
+    <ul id="task-list" class="task-list"></ul>
+  </main>
+
+  <!-- Código da Aplicação -->
+  <script src="script.js" onerror="window.capturedErrors.push('Falha ao carregar script.js')"></script>
+
+  <!-- Script Executor dos Testes Automatizados -->
+  <script>
+    const resultsContainer = document.getElementById('test-results');
+    const summaryContainer = document.getElementById('test-summary');
+
+    let total = 0;
+    let passed = 0;
+    let failed = 0;
+
+    function assert(condition, message) {
+      total++;
+      const div = document.createElement('div');
+      div.className = `test-item ${condition ? 'test-pass' : 'test-fail'}`;
+      div.textContent = `${condition ? '✓ [PASS]' : '✗ [FAIL]'} ${message}`;
+      resultsContainer.appendChild(div);
+
+      if (condition) {
+        passed++;
+        console.log(`[PASS] ${message}`);
+      } else {
+        failed++;
+        console.error(`[FAIL] ${message}`);
+      }
+    }
+
+    // Executa a bateria de testes logo após o carregamento inicial
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (window.capturedErrors && window.capturedErrors.length > 0) {
+          assert(false, `Erro global prévio: ${window.capturedErrors.join(' | ')}`);
+        }
+        // 0. Limpa estado inicial
+        localStorage.clear();
+        tasks = [];
+        renderTasks();
+
+        // TESTE 1: Lista começa vazia e exibe mensagem amigável
+        const emptyMsg = document.querySelector('.empty-message');
+        assert(tasks.length === 0, '1. Estado inicial sem tarefas');
+        assert(emptyMsg !== null, '2. Mensagem amigável de lista vazia é exibida');
+
+        // TESTE 2: Adicionar uma tarefa
+        taskInput.value = 'Estudar HTML e CSS';
+        taskForm.dispatchEvent(new Event('submit', { cancelable: true }));
+
+        const items1 = document.querySelectorAll('.task-item');
+        assert(items1.length === 1, '3. Tarefa adicionada na interface (1 item)');
+        assert(tasks.length === 1 && tasks[0].text === 'Estudar HTML e CSS', '4. Objeto da tarefa inserido no array');
+        assert(tasks[0].completed === false, '5. Tarefa nasce como pendente');
+
+        // TESTE 3: Verificação dos elementos visuais da tarefa pendente
+        const taskSpan = items1[0].querySelector('.task-text');
+        const badge1 = items1[0].querySelector('.status-badge');
+        assert(taskSpan.textContent === 'Estudar HTML e CSS', '6. Texto da tarefa exibido corretamente');
+        assert(badge1.textContent === 'Pendente', '7. Badge exibe texto "Pendente"');
+        assert(badge1.classList.contains('pending-badge'), '8. Badge possui a classe "pending-badge"');
+        assert(!items1[0].classList.contains('completed'), '9. Item NÃO possui a classe ".completed"');
+        assert(taskCount.textContent.includes('0 de 1'), '10. Contador mostra "0 de 1 tarefas concluídas"');
+
+        // TESTE 4: Concluir tarefa (clique no checkbox)
+        const checkbox1 = items1[0].querySelector('input[type="checkbox"]');
+        checkbox1.click(); // Alterna para concluída
+
+        const itemsAfterCheck = document.querySelectorAll('.task-item');
+        const badge2 = itemsAfterCheck[0].querySelector('.status-badge');
+        assert(tasks[0].completed === true, '11. Estado "completed" atualizado para true no array');
+        assert(itemsAfterCheck[0].classList.contains('completed'), '12. Item agora POSSUI a classe ".completed"');
+        assert(badge2.textContent === '✓ Concluída', '13. Badge atualizado para "✓ Concluída"');
+        assert(badge2.classList.contains('completed-badge'), '14. Badge possui a classe "completed-badge"');
+        assert(taskCount.textContent.includes('1 de 1'), '15. Contador atualizado para "1 de 1 tarefas concluídas"');
+
+        // TESTE 5: Adicionar uma segunda tarefa
+        taskInput.value = 'Construir página com JavaScript';
+        taskForm.dispatchEvent(new Event('submit', { cancelable: true }));
+
+        const items2 = document.querySelectorAll('.task-item');
+        assert(items2.length === 2, '16. Segunda tarefa adicionada (total de 2 tarefas)');
+        assert(taskCount.textContent.includes('1 de 2'), '17. Contador mostra "1 de 2 tarefas concluídas"');
+
+        // TESTE 6: Desmarcar tarefa (voltar a ser pendente)
+        // O segundo item na lista é a primeira tarefa que estava concluída
+        const secondItemCheckbox = items2[1].querySelector('input[type="checkbox"]');
+        secondItemCheckbox.click(); // Desmarca
+
+        const itemsAfterUncheck = document.querySelectorAll('.task-item');
+        assert(tasks.find(t => t.text === 'Estudar HTML e CSS').completed === false, '18. Tarefa desmarcada com sucesso');
+        assert(!itemsAfterUncheck[1].classList.contains('completed'), '19. Classe ".completed" removida');
+        assert(taskCount.textContent.includes('0 de 2'), '20. Contador volta para "0 de 2 tarefas concluídas"');
+
+        // TESTE 7: Remover uma tarefa (botão X)
+        const deleteBtn = itemsAfterUncheck[0].querySelector('.delete-btn');
+        deleteBtn.click(); // Remove a tarefa mais recente
+
+        const itemsAfterDelete = document.querySelectorAll('.task-item');
+        assert(itemsAfterDelete.length === 1, '21. Tarefa removida com sucesso (resta 1 item)');
+        assert(tasks.length === 1, '22. Array de tarefas sincronizado após exclusão');
+
+        // TESTE 8: Persistência no localStorage
+        const stored = JSON.parse(localStorage.getItem('minhas_tarefas'));
+        assert(stored !== null && stored.length === 1, '23. Dados gravados e persistidos no localStorage');
+
+        // TESTE 9: Validação de campo vazio
+        taskInput.value = '   ';
+        taskForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        assert(tasks.length === 1, '24. Tentativa de adicionar texto vazio é ignorada');
+
+        // Resumo final
+        const isSuccess = (failed === 0);
+        summaryContainer.className = `test-summary ${isSuccess ? 'summary-pass' : 'summary-fail'}`;
+        summaryContainer.textContent = `${isSuccess ? 'TODOS OS TESTES PASSARAM!' : 'TESTES COM FALHA'} (${passed}/${total})`;
+
+        // Salva os resultados no DOM para inspeção headless
+        document.body.setAttribute('data-test-status', isSuccess ? 'SUCCESS' : 'FAILURE');
+        document.body.setAttribute('data-test-summary', `${passed}/${total} passaram`);
+
+      } catch (err) {
+        assert(false, `Exceção inesperada: ${err.message}`);
+      }
+    });
+  </script>
+</body>
+</html>
