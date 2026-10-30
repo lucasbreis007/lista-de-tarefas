@@ -1,4 +1,5 @@
 # ✅ Lista de Tarefas com o Google Antigravity
+https://lucasbreis007.github.io/lista-de-tarefas/
 
 Projeto do **Desafio 3: Criando uma lista de tarefas com o Google Antigravity**. Aplicação web simples, com interface visual, para acompanhar atividades pendentes e concluídas. Foi desenvolvida com ajuda do Google Antigravity usando apenas **HTML, CSS e JavaScript**, sem frameworks e sem instalar nada.
 
