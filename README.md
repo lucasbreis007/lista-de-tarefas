@@ -22,7 +22,7 @@ lista-de-tarefas/
 ├── index.html         # Estrutura da página
 ├── style.css          # Visual da aplicação
 ├── script.js          # Comportamento e lógica
-├── test-bundle.html   # Página de testes automatizados
+├── test-runner.html   # Página de testes automatizados
 ├── README.md
 └── imagens/           # Prints usados neste README
 ```
@@ -37,7 +37,7 @@ Não precisa de servidor nem de instalação:
 
 ### Como rodar os testes
 
-Dê um duplo clique em `test-bundle.html`. A página executa as verificações sozinha e mostra o resultado na tela.
+Dê um duplo clique em `test-runner.html`. A página executa as verificações sozinha e mostra o resultado na tela.
 
 ## Exemplos de uso
 
@@ -127,7 +127,7 @@ O JavaScript é quem sabe se a tarefa está concluída (`task.completed`), e o C
 
 ### Testes automatizados
 
-Pedi ao Antigravity que verificasse se a lista de tarefas continua funcionando depois da melhoria. Ele criou a página `test-bundle.html`, que executa mais de 20 verificações automáticas sobre o comportamento da aplicação, como adicionar, concluir, desmarcar, remover e ignorar uma tarefa com texto vazio. No final, a página mostra um resumo com a quantidade de testes aprovados.
+Pedi ao Antigravity que verificasse se a lista de tarefas continua funcionando depois da melhoria. Ele criou a página `test-runner.html`, que executa mais de 20 verificações automáticas sobre o comportamento da aplicação, como adicionar, concluir, desmarcar, remover e ignorar uma tarefa com texto vazio. No final, a página mostra um resumo com a quantidade de testes aprovados.
 
 Para ler o resultado automaticamente, o Antigravity também abriu essa página no Chrome sem janela (modo *headless*) por um comando no PowerShell e extraiu os resultados do código da página.
 
